@@ -2,11 +2,11 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from torchtext.legacy.datasets import Multi30k, TranslationDataset
 from torchtext.legacy.data import Field, BucketIterator, Dataset
 
 from model import SEED, Encoder, Decoder, Seq2Seq
 from functions import translate_sentence
+from punc_dataset import PunctuationDataset
 
 import random
 import math
@@ -32,8 +32,8 @@ TRG = Field(tokenize=tokenize,
             eos_token='<eos>',
             lower=True)
 
-train_data, valid_data, test_data = Multi30k.splits(fields=(SRC, TRG),
-                                                    exts=('.um', '.m'))
+train_data, valid_data, test_data = PunctuationDataset.splits(fields=(SRC, TRG),
+                                                              exts=('.um', '.m'))
 
 print(f"Number of training examples: {len(train_data.examples)}")
 print(f"Number of validation examples: {len(valid_data.examples)}")
@@ -194,24 +194,24 @@ CLIP = 1
 
 best_valid_loss = float('inf')
 
-for epoch in range(N_EPOCHS):
-    start_time = time.time()
-
-    train_loss = train(model, train_iterator, optimizer, criterion, CLIP, train_history, valid_history)
-    valid_loss = evaluate(model, valid_iterator, criterion)
-
-    end_time = time.time()
-
-    epoch_mins, epoch_secs = epoch_time(start_time, end_time)
-
-    # train_history.append(train_loss)
-    # valid_history.append(valid_loss)
-
-    val_example_data = next(iter(valid_iterator))
-    to_print = []
-
-    print(get_example_translation())
-
-    print(f'Epoch: {epoch + 1:02} | Time: {epoch_mins}m {epoch_secs}s')
-    print(f'\tTrain Loss: {train_loss:.3f} | Train PPL: {math.exp(train_loss):7.3f}')
-    print(f'\t Val. Loss: {valid_loss:.3f} |  Val. PPL: {math.exp(valid_loss):7.3f}')
+# for epoch in range(N_EPOCHS):
+#     start_time = time.time()
+#
+#     train_loss = train(model, train_iterator, optimizer, criterion, CLIP, train_history, valid_history)
+#     valid_loss = evaluate(model, valid_iterator, criterion)
+#
+#     end_time = time.time()
+#
+#     epoch_mins, epoch_secs = epoch_time(start_time, end_time)
+#
+#     # train_history.append(train_loss)
+#     # valid_history.append(valid_loss)
+#
+#     val_example_data = next(iter(valid_iterator))
+#     to_print = []
+#
+#     print(get_example_translation())
+#
+#     print(f'Epoch: {epoch + 1:02} | Time: {epoch_mins}m {epoch_secs}s')
+#     print(f'\tTrain Loss: {train_loss:.3f} | Train PPL: {math.exp(train_loss):7.3f}')
+#     print(f'\t Val. Loss: {valid_loss:.3f} |  Val. PPL: {math.exp(valid_loss):7.3f}')
